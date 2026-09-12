@@ -63,7 +63,7 @@ app.post('/api/register', (req, res) => {
                         'content-type': 'application/json'
                     },
                     body: JSON.stringify({
-                        sender: { name: "Store Verification", email: "alhajisbu951@gmail.com" },
+                        sender: { name: "Store Verification", email: "alhajiabu951@gmail.com" },
                         to: [{ email: email, name: name }],
                         subject: "Your Verification Code",
                         htmlContent: `<p>Hello ${name},</p><p>Your verification code is: <strong>${otp}</strong></p>`
