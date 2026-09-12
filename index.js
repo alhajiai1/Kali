@@ -1,7 +1,10 @@
 const express = require('express');
 const cors = require('cors');
-require('dotenv').config();
-const db = require('./database');
+const sqlite3 = require('./database');
+
+if (process.env.NODE_ENV !== 'production') {
+    require('dotenv').config();
+}
 
 const app = express();
 
@@ -23,7 +26,7 @@ app.post('/api/register', (req, res) => {
     }
 
     const checkQuery = `SELECT email, phone, id_card FROM users WHERE email = ? OR phone = ? OR id_card = ?`;
-    db.get(checkQuery, [email, phone, ghanaCard], (err, existingUser) => {
+    sqlite3.get(checkQuery, [email, phone, ghanaCard], (err, existingUser) => {
         if (err) {
             console.error('Database Check Error:', err.message);
             return res.status(500).json({ error: `Database Error: ${err.message}` });
@@ -44,7 +47,7 @@ app.post('/api/register', (req, res) => {
         const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
         const insertQuery = `INSERT INTO users (name, email, phone, id_card, otp, verified) VALUES (?, ?, ?, ?, ?, 0)`;
-        db.run(insertQuery, [name, email, phone, ghanaCard, otp], async function(err) {
+        sqlite3.run(insertQuery, [name, email, phone, ghanaCard, otp], async function(err) {
             if (err) {
                 console.error('Database Insert Error:', err.message);
                 return res.status(500).json({ error: `DB Insert Error: ${err.message}` });
@@ -95,7 +98,7 @@ app.post('/api/verify', (req, res) => {
     }
 
     const query = `SELECT * FROM users WHERE email = ?`;
-    db.get(query, [email], (err, user) => {
+    sqlite3.get(query, [email], (err, user) => {
         if (err) {
             console.error('Database Verification Error:', err.message);
             return res.status(500).json({ error: `Database Error: ${err.message}` });
@@ -114,7 +117,7 @@ app.post('/api/verify', (req, res) => {
         }
 
         const updateQuery = `UPDATE users SET verified = 1, otp = NULL WHERE email = ?`;
-        db.run(updateQuery, [email], (updateErr) => {
+        sqlite3.run(updateQuery, [email], (updateErr) => {
             if (updateErr) {
                 console.error('Database Update Error:', updateErr.message);
                 return res.status(500).json({ error: `Database Error: ${updateErr.message}` });
