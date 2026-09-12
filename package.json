@@ -1,14 +1,27 @@
 {
-  "name": "happyfamily",
+  "name": "marketplace-backend",
   "version": "1.0.0",
-  "engines": {
-    "node": "20.x"
+  "description": "Secure marketplace backend",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
   },
   "dependencies": {
-    "cors": "^2.8.5",
-    "dotenv": "^17.4.2",
-    "express": "^4.18.2",
-    "nodemailer": "^6.10.1",
-    "sqlite3": "^5.1.7"
-  }
+    "body-parser": "^1.20.8",
+    "cors": "^2.8.6",
+    "express": "^4.22.2",
+    "jsonwebtoken": "^9.0.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alhajiai1/Happyfamily.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/alhajiai1/Happyfamily/issues"
+  },
+  "homepage": "https://github.com/alhajiai1/Happyfamily#readme"
 }
