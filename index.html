@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Store App</title>
+    <title>Secure Store App</title>
     <style>
         :root {
             --primary-color: #2e7d32; /* Rich Green theme */
@@ -236,7 +236,7 @@
 <body>
 
     <!-- Top Search Header -->
-    <div class="top-header">
+    <div class="top-header" id="header-bar">
         <div class="search-bar">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#777" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
             <input type="text" placeholder="Search products, categories...">
@@ -244,7 +244,7 @@
     </div>
 
     <!-- 1. HOME VIEW -->
-    <div id="view-home" class="view-section active">
+    <div id="view-home" class="view-section">
         <div class="section-title">Featured Categories</div>
         <div class="category-grid">
             <div class="category-card" onclick="switchTab('categories')"><span>Phones & Tablets</span></div>
@@ -287,10 +287,10 @@
         </div>
     </div>
 
-    <!-- 5. ACCOUNT / AUTHENTICATION VIEW -->
+    <!-- 5. ACCOUNT / AUTHENTICATION VIEW (GATED ENTRY) -->
     <div id="view-account" class="view-section">
         <div id="auth-container">
-            <div class="section-title" id="form-title">Account Registration</div>
+            <div class="section-title" id="form-title">Secure Account Registration</div>
             <div id="form-alert" class="alert"></div>
 
             <!-- Registration Form (Email & Phone only) -->
@@ -318,16 +318,21 @@
                     <input type="text" id="otp-code" placeholder="123456" maxlength="6" required style="letter-spacing: 4px; font-size: 18px; text-align: center;">
                 </div>
                 <button type="submit" class="btn-primary">Verify Account</button>
-                
-                <!-- Resend Button & Timer Display -->
                 <button type="button" id="resend-btn" class="btn-secondary" onclick="resendOtp()" disabled>Resend Code (60s)</button>
             </form>
+
+            <!-- Logged-in Profile View (Shown after authentication) -->
+            <div id="profile-view" style="display: none; text-align: center; padding: 20px;">
+                <h3>Welcome, <span id="user-display-name"></span></h3>
+                <p style="color: #666; font-size: 13px; margin: 10px 0;">Your account is securely authenticated and verified.</p>
+                <button class="btn-secondary" onclick="handleLogout()" style="color: #c62828; border-color: #c62828;">Log Out</button>
+            </div>
         </div>
     </div>
 
     <!-- Bottom Navigation Bar -->
     <nav class="bottom-nav">
-        <a class="nav-item active" onclick="switchTab('home')" id="nav-home">
+        <a class="nav-item" onclick="switchTab('home')" id="nav-home">
             <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
             Home
         </a>
@@ -350,7 +355,29 @@
     </nav>
 
     <script>
+        // Check authentication state on page load (Strict Gating)
+        document.addEventListener("DOMContentLoaded", () => {
+            const isVerified = localStorage.getItem('store_is_verified');
+            if (!isVerified) {
+                // Force user to Account / Authentication page if not verified
+                switchTab('account');
+            } else {
+                // If verified, show profile info and default to home
+                showProfileState();
+                switchTab('home');
+            }
+        });
+
         function switchTab(tabName) {
+            const isVerified = localStorage.getItem('store_is_verified');
+            
+            // Security check: if user is not verified and tries to access restricted tabs, block them and prompt login
+            if (!isVerified && tabName !== 'account') {
+                alert('Access restricted. Please register and verify your account first.');
+                switchTab('account');
+                return;
+            }
+
             document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
 
@@ -407,7 +434,7 @@
                     document.getElementById('otp-form').style.display = 'block';
                     document.getElementById('form-title').textContent = 'Secure Account Verification';
                     
-                    startOtpCountdown(60); // Start 60-second countdown
+                    startOtpCountdown(60);
                 } else {
                     alertBox.className = 'alert error';
                     alertBox.style.display = 'block';
@@ -433,7 +460,7 @@
                 if (response.ok) {
                     alertBox.className = 'alert success';
                     alertBox.style.display = 'block';
-                    alertBox.textContent = 'A new verification code has been sent!';
+                    alertBox.textContent = 'A new verification code has been dispatched!';
                     startOtpCountdown(60);
                 } else {
                     alertBox.className = 'alert error';
@@ -461,20 +488,42 @@
                 const data = await response.json();
 
                 if (response.ok) {
+                    // Save secure session state
+                    localStorage.setItem('store_is_verified', 'true');
+                    localStorage.setItem('store_user_name', registeredName);
+
                     alertBox.className = 'alert success';
                     alertBox.style.display = 'block';
-                    alertBox.textContent = 'Account successfully verified! Welcome to the store.';
-                    setTimeout(() => switchTab('home'), 1500);
+                    alertBox.textContent = 'Verification successful! Unlocking store...';
+                    
+                    setTimeout(() => {
+                        showProfileState();
+                        switchTab('home');
+                    }, 1200);
                 } else {
                     alertBox.className = 'alert error';
                     alertBox.style.display = 'block';
-                    alertBox.textContent = data.error || 'Verification failed.';
+                    alertBox.textContent = data.error || 'Invalid verification code.';
                 }
             } catch (err) {
                 alertBox.className = 'alert error';
                 alertBox.style.display = 'block';
                 alertBox.textContent = 'Connection error during verification.';
             }
+        }
+
+        function showProfileState() {
+            document.getElementById('reg-form').style.display = 'none';
+            document.getElementById('otp-form').style.display = 'none';
+            document.getElementById('form-title').textContent = 'My Account';
+            document.getElementById('user-display-name').textContent = localStorage.getItem('store_user_name') || 'Valued Customer';
+            document.getElementById('profile-view').style.display = 'block';
+        }
+
+        function handleLogout() {
+            localStorage.removeItem('store_is_verified');
+            localStorage.removeItem('store_user_name');
+            location.reload(); // Reset state and lock app back
         }
     </script>
 </body>
