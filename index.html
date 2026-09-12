@@ -3,432 +3,478 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Happy Family Store - Secure Platform Access</title>
+    <title>Store App</title>
     <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: #f4f6f8;
+        :root {
+            --primary-color: #2e7d32; /* Rich Green theme */
+            --primary-light: #4caf50;
+            --bg-color: #f8f9fa;
+            --text-color: #333333;
+            --border-color: #e0e0e0;
+        }
+
+        * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
-        /* Auth Container Styles */
-        .auth-wrapper {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            padding-bottom: 70px;
         }
-        .card {
+
+        /* Top Header Search */
+        .top-header {
             background: #ffffff;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            width: 400px;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .search-bar {
+            flex: 1;
+            background: #f1f3f4;
+            border-radius: 24px;
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .search-bar input {
+            border: none;
+            background: transparent;
+            outline: none;
+            width: 100%;
+            font-size: 14px;
+        }
+
+        /* Views Container */
+        .view-section {
+            display: none;
+            padding: 16px;
+        }
+
+        .view-section.active {
+            display: block;
+        }
+
+        /* Category Grid */
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .category-card {
+            background: #111;
+            border-radius: 12px;
+            overflow: hidden;
             text-align: center;
+            color: white;
+            position: relative;
+            height: 110px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 10px;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
         }
-        h2 {
-            color: #333;
-            margin-bottom: 10px;
+
+        .category-card span {
+            font-size: 12px;
+            font-weight: 600;
+            z-index: 2;
+            background: rgba(0,0,0,0.4);
+            padding: 4px;
+            border-radius: 4px;
         }
-        p {
+
+        .section-title {
+            font-size: 16px;
+            font-weight: bold;
+            margin: 16px 0 10px 0;
+        }
+
+        /* Buttons */
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .btn-primary:active {
+            background-color: #1b5e20;
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .btn-secondary:disabled {
+            border-color: #ccc;
+            color: #aaa;
+            cursor: not-allowed;
+        }
+
+        /* Forms & Inputs */
+        .form-group {
+            margin-bottom: 14px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .form-group input:focus {
+            border-color: var(--primary-color);
+        }
+
+        /* Empty States */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .empty-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        .empty-state p {
             color: #666;
             font-size: 14px;
             margin-bottom: 20px;
         }
-        input {
-            width: 100%;
-            padding: 12px;
-            margin: 8px 0;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box;
-            font-size: 14px;
-        }
-        button {
-            width: 100%;
-            padding: 12px;
-            background-color: #f57224; /* Jumia orange theme */
-            color: white;
-            border: none;
-            border-radius: 4px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 10px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 8px;
-        }
-        button:hover {
-            background-color: #e0621b;
-        }
-        button:disabled {
-            background-color: #fcd5bc;
-            cursor: not-allowed;
-        }
-        .error {
-            color: #dc3545;
-            font-size: 13px;
-            margin-top: 10px;
-            display: none;
-        }
-        .success {
-            color: #28a745;
-            font-size: 13px;
-            margin-top: 10px;
-            display: none;
-        }
-        .hidden {
-            display: none !important;
-        }
 
-        /* Spinner CSS Animation */
-        .spinner {
-            width: 16px;
-            height: 16px;
-            border: 2px solid #ffffff;
-            border-top: 2px solid transparent;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-            display: inline-block;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        /* Dashboard Styles (Jumia Style) */
-        #dashboard-section {
-            max-width: 600px;
-            margin: 0 auto;
-            background-color: #f4f6f8;
-            min-height: 100vh;
-            padding-bottom: 70px;
-        }
-        .header-banner {
-            background-color: #ffffff;
-            padding: 20px;
-            border-bottom: 1px solid #e1e4e8;
-        }
-        .user-greeting {
-            font-size: 18px;
-            font-weight: bold;
-            color: #222;
-            margin: 0 0 4px 0;
-        }
-        .user-email {
-            font-size: 14px;
-            color: #f57224;
-            margin: 0;
-        }
-        .support-grid {
-            display: flex;
-            gap: 10px;
-            padding: 15px 20px;
-            background: #ffffff;
-            margin-top: 10px;
-            border-top: 1px solid #e1e4e8;
-            border-bottom: 1px solid #e1e4e8;
-        }
-        .support-btn {
-            flex: 1;
-            padding: 12px;
-            border-radius: 4px;
-            border: none;
-            font-size: 14px;
-            font-weight: bold;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            text-decoration: none;
-        }
-        .btn-livechat {
-            background-color: #f57224;
-            color: white;
-        }
-        .btn-whatsapp {
-            background-color: #25d366;
-            color: white;
-        }
-        .section-title {
-            font-size: 13px;
-            text-transform: uppercase;
-            color: #777;
-            padding: 15px 20px 5px 20px;
-            margin: 0;
-            letter-spacing: 0.5px;
-        }
-        .menu-list {
-            background: #ffffff;
-            border-top: 1px solid #e1e4e8;
-            border-bottom: 1px solid #e1e4e8;
-            margin-bottom: 15px;
-        }
-        .menu-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 16px 20px;
-            text-decoration: none;
-            color: #333;
-            border-bottom: 1px solid #f0f2f5;
-            font-size: 15px;
-        }
-        .menu-item:last-child {
-            border-bottom: none;
-        }
-        .menu-item span {
-            color: #999;
-            font-size: 18px;
-        }
-        .logout-container {
-            padding: 20px;
-            text-align: center;
-        }
-        .logout-btn {
-            background: none;
-            border: 1px solid #f57224;
-            color: #f57224;
-            width: 100%;
-            padding: 14px;
-            border-radius: 4px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        .logout-btn:hover {
-            background-color: #fff4f0;
-        }
+        /* Bottom Navigation Bar */
         .bottom-nav {
             position: fixed;
             bottom: 0;
             left: 0;
             width: 100%;
-            background: white;
+            height: 60px;
+            background: #ffffff;
+            border-top: 1px solid var(--border-color);
             display: flex;
             justify-content: space-around;
-            border-top: 1px solid #ddd;
-            padding: 10px 0;
-            z-index: 100;
+            align-items: center;
+            z-index: 1000;
         }
+
         .nav-item {
-            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             text-decoration: none;
             color: #777;
-            font-size: 12px;
+            font-size: 11px;
+            font-weight: 500;
+            cursor: pointer;
+            flex: 1;
         }
+
         .nav-item.active {
-            color: #f57224;
+            color: var(--primary-color);
         }
+
+        .nav-item svg {
+            width: 22px;
+            height: 22px;
+            margin-bottom: 3px;
+            fill: currentColor;
+        }
+
+        .alert {
+            padding: 10px 14px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            font-size: 13px;
+            display: none;
+        }
+        .alert.error { background: #ffebee; color: #c62828; }
+        .alert.success { background: #e8f5e9; color: #2e7d32; }
     </style>
 </head>
 <body>
 
-    <!-- Authentication Wrapper -->
-    <div id="auth-wrapper" class="auth-wrapper">
-        <div class="card">
-            <h2>🔒 Happy Family Store</h2>
-            <p id="instruction-text">Enter your details & Ghana Card to receive your verification code.</p>
+    <!-- Top Search Header -->
+    <div class="top-header">
+        <div class="search-bar">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#777" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" placeholder="Search products, categories...">
+        </div>
+    </div>
 
-            <!-- Registration Form -->
-            <div id="register-section">
-                <input type="text" id="name" placeholder="Full Name" required>
-                <input type="email" id="email" placeholder="Gmail Address" required>
-                <input type="text" id="phone" placeholder="Phone Number (e.g. 0505162238)" required>
-                <input type="text" id="ghanaCard" placeholder="Ghana Card (e.g. GHA-726823282-2)" required>
+    <!-- 1. HOME VIEW -->
+    <div id="view-home" class="view-section active">
+        <div class="section-title">Featured Categories</div>
+        <div class="category-grid">
+            <div class="category-card" onclick="switchTab('categories')"><span>Phones & Tablets</span></div>
+            <div class="category-card" onclick="switchTab('categories')"><span>Appliances</span></div>
+            <div class="category-card" onclick="switchTab('categories')"><span>Health & Beauty</span></div>
+            <div class="category-card" onclick="switchTab('categories')"><span>Groceries</span></div>
+            <div class="category-card" onclick="switchTab('categories')"><span>Home & Office</span></div>
+            <div class="category-card" onclick="switchTab('categories')"><span>Fashion</span></div>
+        </div>
+    </div>
+
+    <!-- 2. CATEGORIES VIEW -->
+    <div id="view-categories" class="view-section">
+        <div class="section-title">All Categories</div>
+        <div style="background: white; border-radius: 8px; padding: 10px; border: 1px solid var(--border-color);">
+            <p style="padding: 10px; border-bottom: 1px solid #eee; cursor:pointer;" onclick="alert('Showing Supermarket Products')">Supermarket & Groceries</p>
+            <p style="padding: 10px; border-bottom: 1px solid #eee; cursor:pointer;" onclick="alert('Showing Electronics')">Electronics & Home Appliances</p>
+            <p style="padding: 10px; border-bottom: 1px solid #eee; cursor:pointer;" onclick="alert('Showing Mobile Phones')">Mobile Phones & Accessories</p>
+            <p style="padding: 10px; cursor:pointer;" onclick="alert('Showing Fashion Items')">Fashion & Wearables</p>
+        </div>
+    </div>
+
+    <!-- 3. CART VIEW -->
+    <div id="view-cart" class="view-section">
+        <div class="empty-state">
+            <div class="empty-icon">🛒</div>
+            <h3>Your cart is empty!</h3>
+            <p>Browse our catalog and discover our best deals!</p>
+            <button class="btn-primary" onclick="switchTab('home')">Start Shopping</button>
+        </div>
+    </div>
+
+    <!-- 4. WISHLIST VIEW -->
+    <div id="view-wishlist" class="view-section">
+        <div class="empty-state">
+            <div class="empty-icon">❤️</div>
+            <h3>You haven't saved an item yet!</h3>
+            <p>Tap on the heart icon next to any item to add it to your wishlist.</p>
+            <button class="btn-primary" onclick="switchTab('home')">Continue Shopping</button>
+        </div>
+    </div>
+
+    <!-- 5. ACCOUNT / AUTHENTICATION VIEW -->
+    <div id="view-account" class="view-section">
+        <div id="auth-container">
+            <div class="section-title" id="form-title">Account Registration</div>
+            <div id="form-alert" class="alert"></div>
+
+            <!-- Registration Form (Email & Phone only) -->
+            <form id="reg-form" onsubmit="handleRegister(event)">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" id="reg-name" placeholder="Enter your full name" required>
+                </div>
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" id="reg-email" placeholder="name@example.com" required>
+                </div>
+                <div class="form-group">
+                    <label>Phone Number</label>
+                    <input type="tel" id="reg-phone" placeholder="0240000000" required>
+                </div>
+                <button type="submit" class="btn-primary">Register & Send Secure OTP</button>
+            </form>
+
+            <!-- OTP Verification Form with Timer & Resend -->
+            <form id="otp-form" style="display: none;" onsubmit="handleVerify(event)">
+                <p style="font-size: 13px; margin-bottom: 15px; color: #555;">A secure 6-digit verification code has been dispatched to your email address.</p>
+                <div class="form-group">
+                    <label>Enter Verification Code (OTP)</label>
+                    <input type="text" id="otp-code" placeholder="123456" maxlength="6" required style="letter-spacing: 4px; font-size: 18px; text-align: center;">
+                </div>
+                <button type="submit" class="btn-primary">Verify Account</button>
                 
-                <div id="reg-error" class="error"></div>
-                <button id="send-otp-btn" onclick="sendOTP()">
-                    <span class="btn-text">Send Verification Code ✉️</span>
-                </button>
-            </div>
-
-            <!-- OTP Verification Section -->
-            <div id="verify-section" class="hidden">
-                <input type="text" id="otp-code" placeholder="Enter 6-digit Code" maxlength="6" style="text-align: center; letter-spacing: 4px; font-size: 18px;">
-                <div id="verify-error" class="error"></div>
-                <div id="verify-success" class="success"></div>
-                <button id="verify-otp-btn" onclick="verifyOTP()">
-                    <span class="btn-text">Verify & Enter Store</span>
-                </button>
-            </div>
+                <!-- Resend Button & Timer Display -->
+                <button type="button" id="resend-btn" class="btn-secondary" onclick="resendOtp()" disabled>Resend Code (60s)</button>
+            </form>
         </div>
     </div>
 
-    <!-- Jumia-Style Customer Dashboard Section (Hidden Initially) -->
-    <div id="dashboard-section" class="hidden">
-        <div class="header-banner">
-            <p class="user-greeting" id="display-name">Welcome!</p>
-            <p class="user-email" id="display-email">customer@happyfamily.com</p>
-        </div>
-
-        <div class="support-grid">
-            <a href="#" class="support-btn btn-livechat" onclick="alert('Live chat connecting...')">💬 Live Chat</a>
-            <a href="https://wa.me/233505498468" target="_blank" class="support-btn btn-whatsapp">💚 WhatsApp</a>
-        </div>
-
-        <p class="section-title">My Happy Family Account</p>
-        <div class="menu-list">
-            <a href="#" class="menu-item" onclick="alert('Orders history coming soon!')">📦 Orders <span>›</span></a>
-            <a href="#" class="menu-item" onclick="alert('Inbox is empty.')">📥 Inbox <span>›</span></a>
-            <a href="#" class="menu-item" onclick="alert('No reviews yet.')">⭐ Ratings & Reviews <span>›</span></a>
-            <a href="#" class="menu-item" onclick="alert('No active vouchers.')">🎟️ Vouchers <span>›</span></a>
-            <a href="#" class="menu-item" onclick="alert('Wishlist is empty.')">❤️ Wishlist <span>›</span></a>
-            <a href="#" class="menu-item" onclick="alert('No recent views.')">👁️ Recently Viewed <span>›</span></a>
-        </div>
-
-        <p class="section-title">My Settings</p>
-        <div class="menu-list">
-            <a href="#" class="menu-item" onclick="alert('Address book manager.')">📍 Address Book <span>›</span></a>
-            <a href="#" class="menu-item" onclick="alert('Account settings.')">⚙️ Account Management <span>›</span></a>
-            <a href="#" class="menu-item" onclick="alert('Privacy policy details.')">🔒 Privacy Policy <span>›</span></a>
-        </div>
-
-        <div class="logout-container">
-            <button class="logout-btn" onclick="logout()">Logout</button>
-        </div>
-
-        <div class="bottom-nav">
-            <a href="#" class="nav-item active">🏠<br>Home</a>
-            <a href="#" class="nav-item">📂<br>Categories</a>
-            <a href="#" class="nav-item">🛒<br>Cart</a>
-            <a href="#" class="nav-item">❤️<br>Wishlist</a>
-            <a href="#" class="nav-item">👤<br>Account</a>
-        </div>
-    </div>
+    <!-- Bottom Navigation Bar -->
+    <nav class="bottom-nav">
+        <a class="nav-item active" onclick="switchTab('home')" id="nav-home">
+            <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+            Home
+        </a>
+        <a class="nav-item" onclick="switchTab('categories')" id="nav-categories">
+            <svg viewBox="0 0 24 24"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/></svg>
+            Categories
+        </a>
+        <a class="nav-item" onclick="switchTab('cart')" id="nav-cart">
+            <svg viewBox="0 0 24 24"><path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/></svg>
+            Cart
+        </a>
+        <a class="nav-item" onclick="switchTab('wishlist')" id="nav-wishlist">
+            <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+            Wishlist
+        </a>
+        <a class="nav-item" onclick="switchTab('account')" id="nav-account">
+            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg>
+            Account
+        </a>
+    </nav>
 
     <script>
-        const API_URL = 'https://kali-eypp.onrender.com';
-        let registeredEmail = '';
-        let registeredName = '';
+        function switchTab(tabName) {
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
 
-        // Check if user was already verified in this browser session
-        window.onload = function() {
-            const savedName = localStorage.getItem('userName');
-            const savedEmail = localStorage.getItem('userEmail');
-            if (savedName && savedEmail) {
-                showDashboard(savedName, savedEmail);
-            }
-        };
-
-        function setLoading(buttonId, isLoading, defaultText) {
-            const btn = document.getElementById(buttonId);
-            const textSpan = btn.querySelector('.btn-text');
-            
-            if (isLoading) {
-                btn.disabled = true;
-                textSpan.innerHTML = `<span class="spinner"></span> Processing...`;
-            } else {
-                btn.disabled = false;
-                textSpan.innerHTML = defaultText;
-            }
+            document.getElementById('view-' + tabName).classList.add('active');
+            document.getElementById('nav-' + tabName).classList.add('active');
+            window.scrollTo(0, 0);
         }
 
-        async function sendOTP() {
-            const name = document.getElementById('name').value.trim();
-            const email = document.getElementById('email').value.trim();
-            const phone = document.getElementById('phone').value.trim();
-            const ghanaCard = document.getElementById('ghanaCard').value.trim();
-            const errorDiv = document.getElementById('reg-error');
+        let registeredEmail = '';
+        let registeredName = '';
+        let registeredPhone = '';
+        let countdownTimer = null;
 
-            errorDiv.style.display = 'none';
+        function startOtpCountdown(duration = 60) {
+            let timer = duration;
+            const resendBtn = document.getElementById('resend-btn');
+            resendBtn.disabled = true;
 
-            if (!name || !email || !phone || !ghanaCard) {
-                errorDiv.innerText = 'Please fill out all fields.';
-                errorDiv.style.display = 'block';
-                return;
-            }
+            if (countdownTimer) clearInterval(countdownTimer);
 
-            setLoading('send-otp-btn', true, 'Send Verification Code ✉️');
+            countdownTimer = setInterval(() => {
+                let seconds = parseInt(timer % 60, 10);
+                resendBtn.textContent = `Resend Code (${seconds}s)`;
+
+                if (--timer < 0) {
+                    clearInterval(countdownTimer);
+                    resendBtn.disabled = false;
+                    resendBtn.textContent = 'Resend Code';
+                }
+            }, 1000);
+        }
+
+        async function handleRegister(e) {
+            e.preventDefault();
+            registeredName = document.getElementById('reg-name').value;
+            registeredEmail = document.getElementById('reg-email').value;
+            registeredPhone = document.getElementById('reg-phone').value;
+            const alertBox = document.getElementById('form-alert');
 
             try {
-                const response = await fetch(`${API_URL}/api/register`, {
+                const response = await fetch('/api/register', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name, email, phone, ghanaCard })
+                    body: JSON.stringify({ name: registeredName, email: registeredEmail, phone: registeredPhone })
                 });
-
                 const data = await response.json();
 
                 if (response.ok) {
-                    registeredEmail = email;
-                    registeredName = name;
-                    document.getElementById('register-section').classList.add('hidden');
-                    document.getElementById('verify-section').classList.remove('hidden');
-                    document.getElementById('instruction-text').innerText = `A verification code has been sent to ${email}. Check your inbox or server logs!`;
+                    alertBox.className = 'alert success';
+                    alertBox.style.display = 'block';
+                    alertBox.textContent = data.message;
+                    
+                    document.getElementById('reg-form').style.display = 'none';
+                    document.getElementById('otp-form').style.display = 'block';
+                    document.getElementById('form-title').textContent = 'Secure Account Verification';
+                    
+                    startOtpCountdown(60); // Start 60-second countdown
                 } else {
-                    errorDiv.innerText = data.error || 'Failed to send verification code.';
-                    errorDiv.style.display = 'block';
-                    setLoading('send-otp-btn', false, 'Send Verification Code ✉️');
+                    alertBox.className = 'alert error';
+                    alertBox.style.display = 'block';
+                    alertBox.textContent = data.error || 'Registration failed.';
                 }
             } catch (err) {
-                errorDiv.innerText = 'Could not connect to the live Render server.';
-                errorDiv.style.display = 'block';
-                setLoading('send-otp-btn', false, 'Send Verification Code ✉️');
+                alertBox.className = 'alert error';
+                alertBox.style.display = 'block';
+                alertBox.textContent = 'Connection error. Please try again.';
             }
         }
 
-        async function verifyOTP() {
-            const otp = document.getElementById('otp-code').value.trim();
-            const errorDiv = document.getElementById('verify-error');
-            const successDiv = document.getElementById('verify-success');
+        async function resendOtp() {
+            const alertBox = document.getElementById('form-alert');
+            try {
+                const response = await fetch('/api/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name: registeredName, email: registeredEmail, phone: registeredPhone })
+                });
+                const data = await response.json();
 
-            errorDiv.style.display = 'none';
-            successDiv.style.display = 'none';
-
-            if (otp.length !== 6) {
-                errorDiv.innerText = 'Please enter a valid 6-digit code.';
-                errorDiv.style.display = 'block';
-                return;
+                if (response.ok) {
+                    alertBox.className = 'alert success';
+                    alertBox.style.display = 'block';
+                    alertBox.textContent = 'A new verification code has been sent!';
+                    startOtpCountdown(60);
+                } else {
+                    alertBox.className = 'alert error';
+                    alertBox.style.display = 'block';
+                    alertBox.textContent = data.error || 'Failed to resend code.';
+                }
+            } catch (err) {
+                alertBox.className = 'alert error';
+                alertBox.style.display = 'block';
+                alertBox.textContent = 'Connection error while resending code.';
             }
+        }
 
-            setLoading('verify-otp-btn', true, 'Verify & Enter Store');
+        async function handleVerify(e) {
+            e.preventDefault();
+            const otp = document.getElementById('otp-code').value;
+            const alertBox = document.getElementById('form-alert');
 
             try {
-                const response = await fetch(`${API_URL}/api/verify`, {
+                const response = await fetch('/api/verify', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email: registeredEmail, otp })
                 });
-
                 const data = await response.json();
 
                 if (response.ok) {
-                    successDiv.innerText = 'Verification successful! Loading your account...';
-                    successDiv.style.display = 'block';
-                    
-                    // Save session details
-                    localStorage.setItem('userName', registeredName);
-                    localStorage.setItem('userEmail', registeredEmail);
-
-                    setTimeout(() => {
-                        showDashboard(registeredName, registeredEmail);
-                    }, 1000);
+                    alertBox.className = 'alert success';
+                    alertBox.style.display = 'block';
+                    alertBox.textContent = 'Account successfully verified! Welcome to the store.';
+                    setTimeout(() => switchTab('home'), 1500);
                 } else {
-                    errorDiv.innerText = data.error || 'Invalid or expired verification code.';
-                    errorDiv.style.display = 'block';
-                    setLoading('verify-otp-btn', false, 'Verify & Enter Store');
+                    alertBox.className = 'alert error';
+                    alertBox.style.display = 'block';
+                    alertBox.textContent = data.error || 'Verification failed.';
                 }
             } catch (err) {
-                errorDiv.innerText = 'Could not connect to the server for verification.';
-                errorDiv.style.display = 'block';
-                setLoading('verify-otp-btn', false, 'Verify & Enter Store');
+                alertBox.className = 'alert error';
+                alertBox.style.display = 'block';
+                alertBox.textContent = 'Connection error during verification.';
             }
-        }
-
-        function showDashboard(name, email) {
-            document.getElementById('auth-wrapper').classList.add('hidden');
-            document.getElementById('dashboard-section').classList.remove('hidden');
-            document.getElementById('display-name').innerText = `Welcome, ${name}!`;
-            document.getElementById('display-email').innerText = email;
-        }
-
-        function logout() {
-            localStorage.clear();
-            window.location.reload();
         }
     </script>
 </body>

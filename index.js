@@ -19,10 +19,10 @@ app.post('/api/register', (req, res) => {
     const name = req.body.name;
     const email = req.body.email;
     const phone = req.body.phone;
-    const ghanaCard = req.body.ghanaCard || req.body.id_card;
 
-    if (!name || !email || !phone || !ghanaCard) {
-        return res.status(400).json({ error: 'All fields (name, email, phone, and Ghana Card) are required.' });
+    if (!name || !email || !phone) {
+        return res.status(400).json({ error: 'All fields (name, email, and phone) are required.' });
+        // Rest of the code remains unchanged
     }
 
     const checkQuery = `SELECT email, phone, id_card FROM users WHERE email = ? OR phone = ? OR id_card = ?`;
